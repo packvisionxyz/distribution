@@ -1,0 +1,133 @@
+name: FFmpeg Static Binary Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      ffmpeg_version:
+        description: "FFmpeg Version (e.g. 8.1)"
+        required: true
+        type: string
+        default: "8.1"
+      build_ubuntu:
+        description: "Build for Ubuntu"
+        required: false
+        type: boolean
+        default: true
+      build_macos:
+        description: "Build for macOS"
+        required: false
+        type: boolean
+        default: true
+      build_windows:
+        description: "Build for Windows"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-ubuntu:
+    if: inputs.build_ubuntu != false
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Cache FFmpeg
+        id: cache-ffmpeg
+        uses: actions/cache@v6
+        with:
+          path: ffmpeg
+          key: ffmpeg-linux-${{ inputs.ffmpeg_version }}-static
+
+      - name: Download FFmpeg
+        if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          wget https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n${{ inputs.ffmpeg_version }}-latest-linux64-gpl-${{ inputs.ffmpeg_version }}.tar.xz
+          tar xf ffmpeg-n${{ inputs.ffmpeg_version }}-latest-linux64-gpl-${{ inputs.ffmpeg_version }}.tar.xz
+          mv ffmpeg-n${{ inputs.ffmpeg_version }}-latest-linux64-gpl-${{ inputs.ffmpeg_version }} ffmpeg
+
+      - name: Prepare FFmpeg Archive
+        shell: bash
+        run: |
+          cd ffmpeg/bin
+          tar -czf ../../ffmpeg-ubuntu-x86_64-unknown-linux-gnu.tar.gz ffmpeg
+
+      - name: Upload Assets to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ inputs.ffmpeg_version }}
+          name: FFmpeg Static Release v${{ inputs.ffmpeg_version }}
+          files: ffmpeg-ubuntu-x86_64-unknown-linux-gnu.tar.gz
+          make_latest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-windows:
+    if: inputs.build_windows != false
+    runs-on: windows-latest
+    steps:
+      - name: Cache FFmpeg
+        id: cache-ffmpeg
+        uses: actions/cache@v6
+        with:
+          path: ffmpeg
+          key: ffmpeg-windows-${{ inputs.ffmpeg_version }}-static
+
+      - name: Download FFmpeg
+        if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          curl -L -o ffmpeg.zip https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n${{ inputs.ffmpeg_version }}-latest-win64-gpl-${{ inputs.ffmpeg_version }}.zip
+          unzip ffmpeg.zip
+          mv ffmpeg-n${{ inputs.ffmpeg_version }}-latest-win64-gpl-${{ inputs.ffmpeg_version }} ffmpeg
+
+      - name: Prepare FFmpeg Archive
+        shell: bash
+        run: |
+          cd ffmpeg/bin
+          tar -czf ../../ffmpeg-windows-x86_64-pc-windows-msvc.tar.gz ffmpeg.exe
+
+      - name: Upload Assets to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ inputs.ffmpeg_version }}
+          name: FFmpeg Static Release v${{ inputs.ffmpeg_version }}
+          files: ffmpeg-windows-x86_64-pc-windows-msvc.tar.gz
+          make_latest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos:
+    if: inputs.build_macos != false
+    runs-on: macos-latest
+    steps:
+      - name: Cache FFmpeg
+        id: cache-ffmpeg
+        uses: actions/cache@v6
+        with:
+          path: ffmpeg
+          key: ffmpeg-macos-${{ inputs.ffmpeg_version }}-static
+
+      - name: Download FFmpeg
+        if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          VERSION_STR=$(echo "${{ inputs.ffmpeg_version }}" | tr -d '.')
+          curl -L -o ffmpeg.zip "https://www.osxexperts.net/ffmpeg${VERSION_STR}arm.zip"
+          unzip ffmpeg.zip
+
+      - name: Prepare FFmpeg Archive
+        shell: bash
+        run: |
+          mkdir -p ffmpeg_bundle
+          mv ffmpeg ffmpeg_bundle/
+          cd ffmpeg_bundle
+          tar -czf $GITHUB_WORKSPACE/ffmpeg-macos-aarch64-apple-darwin.tar.gz ffmpeg
+
+      - name: Upload Assets to Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ inputs.ffmpeg_version }}
+          name: FFmpeg Static Release v${{ inputs.ffmpeg_version }}
+          files: ffmpeg-macos-aarch64-apple-darwin.tar.gz
+          make_latest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
