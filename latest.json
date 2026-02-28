@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "notes": "See the assets to download this version and install.",
+  "pub_date": null,
+  "platforms": {
+    "darwin-aarch64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTK2xxNnFHU3B5UkZWUUxzQmdsa2RuTGdwaCtTYzRVb1Z0bE0xR0xTckVDMmZMdmM4aHQvKzNKbDRaMytWSk5hV2dsZmUzNUxBZmpNUFc0L1lxQmZOMnozWUlEcldYcVFBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyMjA5OTkyCWZpbGU6UGFja1Zpc2lvbi5hcHAudGFyLmd6Ck9Bc1JlMjZkRUJ0UVpmU2VNUU11RkxQS3NGeEdzb1UzSldKcFg1T0FNNjE4ckQzaG5pVFBuWHBDSXR4TFZiV0U4NXN5aStBeUo1bzBMb1hKZ3VJMkRBPT0K",
+      "url": "https://github.com/packvisionxyz/distribution/releases/download/untagged-7c67a4c6b39dc1c5e670/PackVision_aarch64.app.tar.gz"
+    }
+  }
+}
