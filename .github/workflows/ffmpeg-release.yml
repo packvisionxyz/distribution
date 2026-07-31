@@ -54,7 +54,7 @@ jobs:
           tar -czf ../../ffmpeg-ubuntu-x86_64-unknown-linux-gnu.tar.gz ffmpeg
 
       - name: Upload Assets to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ inputs.ffmpeg_version }}
           name: FFmpeg Static Release v${{ inputs.ffmpeg_version }}
@@ -88,7 +88,7 @@ jobs:
           tar -czf ../../ffmpeg-windows-x86_64-pc-windows-msvc.tar.gz ffmpeg.exe
 
       - name: Upload Assets to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ inputs.ffmpeg_version }}
           name: FFmpeg Static Release v${{ inputs.ffmpeg_version }}
