@@ -1,0 +1,128 @@
+name: go2rtc Static Binary Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      go2rtc_version:
+        description: "go2rtc Version (e.g. v1.9.14)"
+        required: true
+        type: string
+        default: "v1.9.14"
+      build_ubuntu:
+        description: "Build for Ubuntu"
+        required: false
+        type: boolean
+        default: true
+      build_macos:
+        description: "Build for macOS"
+        required: false
+        type: boolean
+        default: true
+      build_windows:
+        description: "Build for Windows"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-ubuntu:
+    if: inputs.build_ubuntu != false
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Cache go2rtc
+        id: cache-go2rtc
+        uses: actions/cache@v6
+        with:
+          path: go2rtc
+          key: go2rtc-linux-${{ inputs.go2rtc_version }}
+
+      - name: Download go2rtc
+        if: steps.cache-go2rtc.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          curl -L -o go2rtc https://github.com/AlexxIT/go2rtc/releases/download/${{ inputs.go2rtc_version }}/go2rtc_linux_amd64
+          chmod +x go2rtc
+
+      - name: Prepare go2rtc Archive
+        shell: bash
+        run: |
+          tar -czf go2rtc-ubuntu-x86_64-unknown-linux-gnu.tar.gz go2rtc
+
+      - name: Upload Assets to Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: go2rtc_${{ inputs.go2rtc_version }}
+          name: go2rtc Static Release ${{ inputs.go2rtc_version }}
+          files: go2rtc-ubuntu-x86_64-unknown-linux-gnu.tar.gz
+          make_latest: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos:
+    if: inputs.build_macos != false
+    runs-on: macos-latest
+    steps:
+      - name: Cache go2rtc
+        id: cache-go2rtc
+        uses: actions/cache@v6
+        with:
+          path: go2rtc
+          key: go2rtc-macos-${{ inputs.go2rtc_version }}
+
+      - name: Download go2rtc
+        if: steps.cache-go2rtc.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          curl -L -o go2rtc.zip https://github.com/AlexxIT/go2rtc/releases/download/${{ inputs.go2rtc_version }}/go2rtc_mac_arm64.zip
+          unzip go2rtc.zip
+          rm go2rtc.zip
+          chmod +x go2rtc
+
+      - name: Prepare go2rtc Archive
+        shell: bash
+        run: |
+          tar -czf go2rtc-macos-aarch64-apple-darwin.tar.gz go2rtc
+
+      - name: Upload Assets to Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: go2rtc_${{ inputs.go2rtc_version }}
+          name: go2rtc Static Release ${{ inputs.go2rtc_version }}
+          files: go2rtc-macos-aarch64-apple-darwin.tar.gz
+          make_latest: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-windows:
+    if: inputs.build_windows != false
+    runs-on: windows-latest
+    steps:
+      - name: Cache go2rtc
+        id: cache-go2rtc
+        uses: actions/cache@v6
+        with:
+          path: go2rtc
+          key: go2rtc-windows-${{ inputs.go2rtc_version }}
+
+      - name: Download go2rtc
+        if: steps.cache-go2rtc.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          curl -L -o go2rtc.zip https://github.com/AlexxIT/go2rtc/releases/download/${{ inputs.go2rtc_version }}/go2rtc_win64.zip
+          unzip go2rtc.zip
+          rm go2rtc.zip
+
+      - name: Prepare go2rtc Archive
+        shell: bash
+        run: |
+          tar -czf go2rtc-windows-x86_64-pc-windows-msvc.tar.gz go2rtc.exe
+
+      - name: Upload Assets to Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: go2rtc_${{ inputs.go2rtc_version }}
+          name: go2rtc Static Release ${{ inputs.go2rtc_version }}
+          files: go2rtc-windows-x86_64-pc-windows-msvc.tar.gz
+          make_latest: false
+          token: ${{ secrets.GITHUB_TOKEN }}
