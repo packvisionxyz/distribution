@@ -52,7 +52,7 @@ jobs:
           tar -czf go2rtc-ubuntu-x86_64-unknown-linux-gnu.tar.gz go2rtc
 
       - name: Upload Assets to Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: go2rtc_v${{ inputs.go2rtc_version }}
           name: go2rtc Static Release v${{ inputs.go2rtc_version }}
@@ -86,7 +86,7 @@ jobs:
           tar -czf go2rtc-macos-aarch64-apple-darwin.tar.gz go2rtc
 
       - name: Upload Assets to Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: go2rtc_v${{ inputs.go2rtc_version }}
           name: go2rtc Static Release v${{ inputs.go2rtc_version }}
@@ -119,7 +119,7 @@ jobs:
           tar -czf go2rtc-windows-x86_64-pc-windows-msvc.tar.gz go2rtc.exe
 
       - name: Upload Assets to Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: go2rtc_v${{ inputs.go2rtc_version }}
           name: go2rtc Static Release v${{ inputs.go2rtc_version }}
